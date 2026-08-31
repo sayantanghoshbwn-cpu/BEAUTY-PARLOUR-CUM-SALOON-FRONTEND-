@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { siteConfig } from '../config/siteConfig';
-import { X, Calendar, Clock, Scissors, User, Trash2, ArrowUpRight } from 'lucide-react';
+import { X, Calendar, Clock, Scissors, User, Trash2, ArrowUpRight, Download } from 'lucide-react';
+import { downloadAppointmentPass } from './BookingModal';
 
 export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) => {
   const [bookings, setBookings] = useState([]);
@@ -32,7 +33,7 @@ export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) =
         <div className="p-5 border-b border-white/[0.08] flex items-center justify-between sticky top-0 bg-obsidian-900 z-10">
           <div>
             <h3 className="font-heading text-lg font-normal text-white">Appointment Passes</h3>
-            <p className="text-[11px] text-gray-400 font-light">Offline saved reservation history</p>
+            <p className="text-[11px] text-gray-400 font-light">Saved reservation history</p>
           </div>
           <button
             onClick={onClose}
@@ -49,7 +50,7 @@ export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) =
               <div className="text-3xl">🎫</div>
               <h4 className="text-sm font-medium text-white">No Appointment Passes Found</h4>
               <p className="text-xs text-gray-400 max-w-xs mx-auto font-light">
-                Your booked appointments and digital passes will be stored here for offline reference.
+                Your booked appointments and digital passes will be stored here for easy reference.
               </p>
               <button
                 onClick={() => {
@@ -104,12 +105,26 @@ export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) =
                   <div className="font-accent font-bold text-sm text-white">
                     Total: {b.currency}{b.amount}
                   </div>
-                  <button
-                    onClick={() => handleCancel(idx)}
-                    className="text-xs text-gray-400 hover:text-rose-400 font-light flex items-center gap-1 transition-colors cursor-pointer"
-                  >
-                    <Trash2 size={12} /> Cancel Pass
-                  </button>
+                  
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => {
+                        downloadAppointmentPass(b);
+                        showToast(`Pass #${b.id} downloaded!`, 'success');
+                      }}
+                      className="text-xs text-gold-light hover:text-gold font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                      title="Download Pass"
+                    >
+                      <Download size={12} /> Download
+                    </button>
+                    <button
+                      onClick={() => handleCancel(idx)}
+                      className="text-xs text-gray-400 hover:text-rose-400 font-light flex items-center gap-1 transition-colors cursor-pointer"
+                      title="Cancel Pass"
+                    >
+                      <Trash2 size={12} /> Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
             ))

@@ -14,6 +14,11 @@ export default {
           dark: '#9e7e1e',
           champagne: '#e6c887',
         },
+        'rose-gold': {
+          light: '#f7d6ce',
+          DEFAULT: '#c98978',
+          dark: '#9a5e50',
+        },
         obsidian: {
           950: '#07080b',
           900: '#0c0e14',

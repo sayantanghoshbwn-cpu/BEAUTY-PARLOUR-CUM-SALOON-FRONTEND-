@@ -7,10 +7,17 @@ export const HeroSection = ({ onOpenBooking }) => {
 
   return (
     <section id="home" className="relative pt-6 sm:pt-10 pb-20 md:pb-32 overflow-hidden">
-      {/* Ambient Specular Aurora Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-gold/15 via-rose-gold/10 to-transparent rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse-glow"></div>
+      {/* Ambient Responsive Specular Aurora Glows */}
+      {/* Primary Top Headline Aurora Glow */}
+      <div className="absolute -top-10 sm:top-0 md:top-6 left-1/2 -translate-x-1/2 w-[340px] xs:w-[420px] sm:w-[580px] lg:w-[850px] h-[260px] xs:h-[320px] sm:h-[400px] lg:h-[450px] bg-gradient-to-b sm:bg-gradient-to-tr from-gold/40 via-amber-500/25 to-transparent rounded-full blur-[50px] xs:blur-[60px] sm:blur-[90px] lg:blur-[120px] pointer-events-none z-0 animate-pulse-glow"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Secondary Ambient Warm Specular Glow */}
+      <div className="absolute top-1/4 sm:top-1/3 left-1/2 -translate-x-1/2 lg:left-1/4 w-[280px] xs:w-[340px] sm:w-[460px] h-[220px] xs:h-[280px] sm:h-[340px] bg-gradient-to-tr from-amber-500/35 via-gold/25 to-transparent rounded-full blur-[45px] xs:blur-[55px] sm:blur-[85px] pointer-events-none z-0"></div>
+
+      {/* Tertiary Lower / Mobile Visual Accent Glow (Soft subtle warmth) */}
+      <div className="absolute bottom-4 sm:bottom-10 right-1/2 translate-x-1/2 lg:translate-x-0 lg:right-4 w-[220px] xs:w-[280px] sm:w-[360px] h-[180px] xs:h-[240px] sm:h-[280px] bg-gradient-to-tl from-gold/18 via-amber-500/10 to-transparent rounded-full blur-[45px] sm:blur-[65px] pointer-events-none z-0"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
           {/* Left Hero Narrative */}
@@ -83,9 +90,12 @@ export const HeroSection = ({ onOpenBooking }) => {
 
           {/* Right Hero Visual Framing */}
           <div className="lg:col-span-5 relative">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
+            <div className="relative mx-auto max-w-md lg:max-w-none group">
+              {/* Subtle Golden Ambient Halo behind image */}
+              <div className="absolute -inset-1 sm:-inset-2 bg-gradient-to-tr from-gold/20 via-amber-500/12 to-rose-gold/10 rounded-[2.8rem] blur-lg sm:blur-xl opacity-45 group-hover:opacity-75 transition-opacity duration-700 pointer-events-none z-0"></div>
+
               {/* Glass Frame */}
-              <div className="relative rounded-[2.5rem] overflow-hidden p-2 liquid-glass">
+              <div className="relative rounded-[2.5rem] overflow-hidden p-2 liquid-glass z-10">
                 <div className="rounded-[2.1rem] overflow-hidden relative">
                   <img
                     src="assets/images/hero_salon.jpg"
