@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { siteConfig } from '../config/siteConfig';
-import { X, Calendar, Clock, Scissors, User, Trash2, ArrowUpRight, Download } from 'lucide-react';
-import { downloadAppointmentPass } from './BookingModal';
+import { X, Calendar, Clock, Scissors, User, Trash2, ArrowUpRight, Download, Printer } from 'lucide-react';
+import { downloadAppointmentPassPdf, printAppointmentPass } from '../utils/pdfGenerator';
 
 export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) => {
   const [bookings, setBookings] = useState([]);
@@ -33,7 +33,7 @@ export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) =
         <div className="p-5 border-b border-white/[0.08] flex items-center justify-between sticky top-0 bg-obsidian-900 z-10">
           <div>
             <h3 className="font-heading text-lg font-normal text-white">Appointment Passes</h3>
-            <p className="text-[11px] text-gray-400 font-light">Saved reservation history</p>
+            <p className="text-[11px] text-gray-400 font-light">Official reservation history</p>
           </div>
           <button
             onClick={onClose}
@@ -101,21 +101,31 @@ export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) =
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
+                <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between flex-wrap gap-2">
                   <div className="font-accent font-bold text-sm text-white">
                     Total: {b.currency}{b.amount}
                   </div>
                   
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={() => {
-                        downloadAppointmentPass(b);
-                        showToast(`Pass #${b.id} downloaded!`, 'success');
+                      onClick={async () => {
+                        showToast('Generating official PDF pass...', 'info');
+                        await downloadAppointmentPassPdf(b);
+                        showToast(`Official PDF Pass #${b.id} downloaded!`, 'success');
                       }}
                       className="text-xs text-gold-light hover:text-gold font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                      title="Download Pass"
+                      title="Download Official PDF Pass"
                     >
-                      <Download size={12} /> Download
+                      <Download size={12} /> Download PDF
+                    </button>
+                    <button
+                      onClick={() => {
+                        printAppointmentPass(b);
+                      }}
+                      className="text-xs text-gray-300 hover:text-white font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                      title="Print Appointment Pass"
+                    >
+                      <Printer size={12} /> Print
                     </button>
                     <button
                       onClick={() => handleCancel(idx)}

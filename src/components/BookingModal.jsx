@@ -1,74 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { siteConfig } from '../config/siteConfig';
-import { X, Check, MessageCircle, Download, ArrowRight, ArrowLeft, Tag, Sparkles, CheckCircle2, Calendar, Clock, Scissors, User, FileText } from 'lucide-react';
+import { X, Check, MessageCircle, Download, Printer, ArrowRight, ArrowLeft, Tag, Sparkles, CheckCircle2, Calendar, Clock, Scissors, User, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { downloadAppointmentPassPdf, printAppointmentPass } from '../utils/pdfGenerator';
 
-export const downloadAppointmentPass = (booking) => {
-  const brand = siteConfig.brand;
-  const divider = "==========================================================";
-  const subDivider = "----------------------------------------------------------";
-
-  const content = `${divider}
-                  ${brand.name.toUpperCase()}
-          SANCTUARY OF HAUTE COUTURE & WELLNESS
-${divider}
-
-APPOINTMENT CONFIRMATION PASS
-Pass Reference : #${booking.id}
-Date Issued    : ${new Date(booking.createdAt).toLocaleString()}
-Status         : ${booking.status}
-
-${subDivider}
-1. GUEST INFORMATION
-${subDivider}
-Guest Name     : ${booking.clientName}
-WhatsApp Phone : ${booking.clientPhone}
-Specialist     : ${booking.stylist}
-
-${subDivider}
-2. RESERVATION SCHEDULE
-${subDivider}
-Appointment Date : ${booking.date}
-Assigned Time    : ${booking.slot}
-Studio Location  : ${brand.address}
-
-${subDivider}
-3. SELECTED TREATMENTS
-${subDivider}
-${booking.services.map((s, idx) => `  ${idx + 1}. ${s}`).join('\n')}
-
-${subDivider}
-4. BILLING ESTIMATE
-${subDivider}
-Estimated Total  : ${booking.currency}${booking.amount}
-Payment Mode     : Pay at Studio Reception upon Service Completion
-
-${subDivider}
-STUDIO ASSISTANCE & CONTACT
-${subDivider}
-Helpline / Phone : ${brand.phone}
-WhatsApp Concierge: +${siteConfig.whatsapp.number}
-Operating Hours  : Mon-Fri: 10:00 AM - 08:30 PM
-                   Sat-Sun: 09:00 AM - 09:00 PM
-
-* Please present this digital pass or your WhatsApp message
-  at the salon reception upon your arrival.
-* For rescheduling, please notify our WhatsApp concierge
-  at least 2 hours in advance.
-
-${divider}
-        Thank you for choosing ${brand.name}!
-${divider}`;
-
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `AuraLuxe_Pass_${booking.id}.txt`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
+export const downloadAppointmentPass = (booking) => downloadAppointmentPassPdf(booking);
+export { downloadAppointmentPassPdf, printAppointmentPass };
 
 export const BookingModal = ({
   isOpen,
@@ -83,6 +19,7 @@ export const BookingModal = ({
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedStylist, setSelectedStylist] = useState({ id: 'any', name: 'Any Available Specialist', role: 'Expert Team' });
   const [selectedDate, setSelectedDate] = useState('');
+  const [viewDate, setViewDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState('');
   const [clientInfo, setClientInfo] = useState({
     name: '',
@@ -97,8 +34,10 @@ export const BookingModal = ({
 
   // Set min & default date
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setSelectedDate(today);
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    setSelectedDate(todayStr);
+    setViewDate(new Date(today.getFullYear(), today.getMonth(), 1));
   }, []);
 
   // Handle pre-selections
@@ -275,8 +214,52 @@ Please confirm my appointment slot. Thank you!`;
     window.open(url, '_blank');
 
     // 4. Trigger auto-dismissing toast
-    showToast(`Appointment #${saved.id} reserved & saved locally!`, 'success');
+    showToast(`Appointment #${saved.id} confirmed! You can download your official PDF pass below.`, 'success');
   };
+
+  // Calendar Calculation Helpers
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const currentYear = viewDate.getFullYear();
+  const currentMonth = viewDate.getMonth();
+
+  const handlePrevMonth = () => {
+    const prev = new Date(currentYear, currentMonth - 1, 1);
+    const startOfCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    if (prev >= startOfCurrentMonth) {
+      setViewDate(prev);
+    }
+  };
+
+  const handleNextMonth = () => {
+    setViewDate(new Date(currentYear, currentMonth + 1, 1));
+  };
+
+  const isPrevMonthDisabled = currentYear === today.getFullYear() && currentMonth <= today.getMonth();
+
+  const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+
+  const calendarDays = [];
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    calendarDays.push(null);
+  }
+  for (let day = 1; day <= totalDaysInMonth; day++) {
+    const mStr = String(currentMonth + 1).padStart(2, '0');
+    const dStr = String(day).padStart(2, '0');
+    const dateStr = `${currentYear}-${mStr}-${dStr}`;
+    const isPast = dateStr < todayStr;
+    const isToday = dateStr === todayStr;
+    const isSelected = dateStr === selectedDate;
+
+    calendarDays.push({
+      day,
+      dateStr,
+      isPast,
+      isToday,
+      isSelected,
+    });
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl flex items-center justify-center p-4 overflow-y-auto">
@@ -299,7 +282,7 @@ Please confirm my appointment slot. Thank you!`;
                 : '5. Review & Confirm'}
             </h3>
             <p className="text-[11px] text-gray-400 font-light">
-              {confirmedBooking ? 'Digital pass saved to device' : 'Instant WhatsApp Pass Generation'}
+              {confirmedBooking ? 'Pass ready • Click button below to download PDF' : 'Instant WhatsApp Pass Generation'}
             </p>
           </div>
           <button
@@ -362,7 +345,7 @@ Please confirm my appointment slot. Thank you!`;
                   Session Reserved Successfully!
                 </h4>
                 <p className="text-xs text-gray-400 max-w-sm mx-auto font-light leading-relaxed">
-                  Your appointment has been automatically saved to your local passes and forwarded to our concierge.
+                  ✓ Your appointment details are confirmed and saved. Click below whenever you wish to download your official PDF pass.
                 </p>
               </div>
 
@@ -400,27 +383,41 @@ Please confirm my appointment slot. Thank you!`;
               </div>
 
               {/* Download & View Actions */}
-              <div className="space-y-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    downloadAppointmentPass(confirmedBooking);
-                    showToast('Appointment Pass downloaded to your device!', 'success');
-                  }}
-                  className="w-full py-3.5 rounded-full btn-liquid-gold text-black font-bold text-xs shadow-liquid-glow transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Download size={15} />
-                  <span>Download Appointment Pass (.txt)</span>
-                </button>
+              <div className="space-y-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      showToast('Generating official PDF pass...', 'info');
+                      await downloadAppointmentPass(confirmedBooking);
+                      showToast('Official PDF Pass downloaded to your device!', 'success');
+                    }}
+                    className="w-full py-3.5 rounded-full btn-liquid-gold text-black font-bold text-xs sm:text-sm shadow-liquid-glow transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Download size={15} />
+                    <span>Download PDF Pass</span>
+                  </button>
 
-                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      printAppointmentPass(confirmedBooking);
+                    }}
+                    className="w-full py-3.5 rounded-full btn-liquid-ghost text-white font-bold text-xs sm:text-sm border-gold/40 hover:border-gold transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Printer size={15} className="text-gold-light" />
+                    <span>Print Pass</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 pt-1">
                   <button
                     type="button"
                     onClick={() => {
                       onClose();
                       onOpenMyBookings();
                     }}
-                    className="py-2.5 rounded-full btn-liquid-ghost text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-gray-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/10"
                   >
                     <FileText size={13} />
                     <span>View My Passes</span>
@@ -429,7 +426,7 @@ Please confirm my appointment slot. Thank you!`;
                   <button
                     type="button"
                     onClick={onClose}
-                    className="py-2.5 rounded-full bg-white/[0.06] hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
+                    className="py-2.5 rounded-full bg-white/[0.06] hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer border border-white/10"
                   >
                     <span>Done</span>
                   </button>
@@ -531,23 +528,100 @@ Please confirm my appointment slot. Thank you!`;
                 </div>
               )}
 
-              {/* STEP 3: DATE & TIME */}
+              {/* STEP 3: INTERACTIVE LUXURY CALENDAR & TIME SLOTS */}
               {step === 3 && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-                      Select Date:
-                    </label>
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      min={new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/10 focus:border-gold/50 rounded-xl text-white text-xs outline-none cursor-pointer"
-                    />
+                <div className="space-y-4 animate-in fade-in duration-200">
+                  {/* Interactive Visual Calendar Card */}
+                  <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-3.5 sm:p-4 shadow-inner">
+                    {/* Calendar Month & Navigation Header */}
+                    <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-white/[0.08]">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={15} className="text-gold-light" />
+                        <span className="font-heading font-bold text-sm text-white tracking-wide">
+                          {viewDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={handlePrevMonth}
+                          disabled={isPrevMonthDisabled}
+                          className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-white/10"
+                          title="Previous Month"
+                        >
+                          <ChevronLeft size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleNextMonth}
+                          className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-white/10"
+                          title="Next Month"
+                        >
+                          <ChevronRight size={14} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Weekday Column Headers */}
+                    <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                      <span className="text-rose-400/80">Su</span>
+                      <span>Mo</span>
+                      <span>Tu</span>
+                      <span>We</span>
+                      <span>Th</span>
+                      <span>Fr</span>
+                      <span className="text-gold-light/80">Sa</span>
+                    </div>
+
+                    {/* Days Grid */}
+                    <div className="grid grid-cols-7 gap-1 text-center">
+                      {calendarDays.map((dayObj, index) => {
+                        if (!dayObj) {
+                          return <div key={`empty-${index}`} className="h-8" />;
+                        }
+                        const { day, dateStr, isPast, isToday, isSelected } = dayObj;
+                        return (
+                          <button
+                            key={dateStr}
+                            type="button"
+                            disabled={isPast}
+                            onClick={() => setSelectedDate(dateStr)}
+                            className={`h-8 sm:h-8.5 rounded-xl text-xs font-medium flex flex-col items-center justify-center relative transition-all ${
+                              isSelected
+                                ? 'btn-liquid-gold text-black font-bold shadow-liquid-glow scale-105 z-10'
+                                : isPast
+                                ? 'text-gray-600 cursor-not-allowed opacity-30 bg-transparent'
+                                : 'text-gray-200 hover:text-white hover:bg-white/10 bg-white/[0.03] border border-white/5 cursor-pointer'
+                            }`}
+                          >
+                            <span>{day}</span>
+                            {isToday && !isSelected && (
+                              <span className="w-1 h-1 rounded-full bg-gold absolute bottom-1"></span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Selected Date Summary Pill */}
+                    <div className="mt-3 pt-2.5 border-t border-white/[0.08] flex items-center justify-between text-xs">
+                      <span className="text-gray-400">Chosen Reservation Date:</span>
+                      <span className="font-semibold text-gold-light flex items-center gap-1.5">
+                        <span>
+                          {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                        <CheckCircle2 size={12} className="text-emerald-400" />
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="space-y-3">
+                  {/* Preferred Time Slot */}
+                  <div className="space-y-3 pt-1">
                     <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider">
                       Select Preferred Time Slot:
                     </label>
@@ -565,7 +639,7 @@ Please confirm my appointment slot. Thank you!`;
                                 onClick={() => setSelectedSlot(slot)}
                                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                                   isSelected
-                                    ? 'btn-liquid-gold font-bold text-black'
+                                    ? 'btn-liquid-gold font-bold text-black shadow-liquid-glow'
                                     : 'bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 border border-white/10'
                                 }`}
                               >

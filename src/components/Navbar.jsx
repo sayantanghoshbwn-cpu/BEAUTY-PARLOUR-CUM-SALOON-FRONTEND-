@@ -8,6 +8,7 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
   const [activeSection, setActiveSection] = useState('#home');
   const [capsuleStyle, setCapsuleStyle] = useState({ left: 0, width: 0, opacity: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [passCount, setPassCount] = useState(0);
 
   const navListRef = useRef(null);
   const linkRefs = useRef({});
@@ -22,6 +23,26 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
     { label: 'Calculator', href: '#calculator' },
     { label: 'Studio', href: '#contact' },
   ];
+
+  // Sync pass count from localStorage
+  useEffect(() => {
+    const updateCount = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem('aura_luxe_bookings') || '[]');
+        setPassCount(stored.length);
+      } catch (e) {
+        setPassCount(0);
+      }
+    };
+
+    updateCount();
+    window.addEventListener('storage', updateCount);
+    const interval = setInterval(updateCount, 1500);
+    return () => {
+      window.removeEventListener('storage', updateCount);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
@@ -139,7 +160,7 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
           <div
             ref={navListRef}
             onMouseLeave={handleMouseLeave}
-            className="hidden md:flex items-center relative py-1 px-1"
+            className="hidden lg:flex items-center relative py-1 px-1"
           >
             {/* Animated Water-Drop Liquid Capsule */}
             <div
@@ -176,7 +197,7 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {/* Live Open Status Indicator */}
             <div
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[11px] text-gray-300"
+              className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[11px] text-gray-300 flex-shrink-0"
               title={isOpenNow ? "Salon is currently Open" : "Salon is currently Closed"}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${isOpenNow ? 'bg-emerald-400 animate-ping' : 'bg-rose-400'}`}></span>
@@ -186,7 +207,7 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
             {/* My Bookings Trigger */}
             <button
               onClick={onOpenMyBookings}
-              className="p-1.5 sm:p-2 rounded-full bg-white/[0.05] hover:bg-white/10 border border-white/10 text-gray-300 hover:text-gold-light transition-all cursor-pointer"
+              className="p-1.5 sm:p-2 rounded-full bg-white/[0.05] hover:bg-white/10 border border-white/10 text-gray-300 hover:text-gold-light transition-all cursor-pointer flex-shrink-0"
               title="My Appointment Passes"
               aria-label="My Appointment Passes"
             >
@@ -196,16 +217,16 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
             {/* Minimal Book Button */}
             <button
               onClick={() => onOpenBooking()}
-              className="btn-liquid-gold px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1"
+              className="btn-liquid-gold px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
             >
               <Sparkles size={12} />
               <span>Book</span>
             </button>
 
-            {/* Mobile Menu Hamburger */}
+            {/* Mobile / Tablet Menu Hamburger */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-1.5 text-gray-300 hover:text-white rounded-full bg-white/[0.05] border border-white/10 cursor-pointer"
+              className="lg:hidden p-1.5 text-gray-300 hover:text-white rounded-full bg-white/[0.05] border border-white/10 cursor-pointer flex-shrink-0"
               aria-label="Open mobile menu"
             >
               <Menu size={18} />
@@ -216,7 +237,7 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
 
       {/* Fullscreen Mobile Liquid Glass Drawer (Mounted to top-level for 100% viewport coverage) */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-3xl flex flex-col justify-between p-6 md:hidden overflow-y-auto animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-3xl flex flex-col justify-between p-6 lg:hidden overflow-y-auto animate-in fade-in duration-300">
           
           {/* Ambient Glowing Background Orbs inside Mobile Drawer */}
           <div className="absolute top-10 left-10 w-72 h-72 bg-gold/25 rounded-full blur-[90px] pointer-events-none z-0"></div>
@@ -303,10 +324,15 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
                 setMobileMenuOpen(false);
                 onOpenMyBookings();
               }}
-              className="w-full btn-liquid-ghost py-3 rounded-full font-semibold text-xs text-gray-300 flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full btn-liquid-ghost py-3 rounded-full font-semibold text-xs text-gray-300 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <CalendarCheck size={14} />
-              <span>My Appointment Passes</span>
+              <CalendarCheck size={14} className="text-gold-light" />
+              <span>My Appointment Passes & Invoices</span>
+              {passCount > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-gold text-black text-[10px] font-black leading-tight shadow-sm">
+                  {passCount}
+                </span>
+              )}
             </button>
           </div>
 
