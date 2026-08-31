@@ -15,13 +15,13 @@ export const AnnouncementBar = ({ onOpenBooking, showToast }) => {
   };
 
   return (
-    <aside aria-label="Special Offers" className="pt-20 sm:pt-24 pb-2 px-3 sm:px-6 text-center relative z-20 flex justify-center">
+    <aside aria-label="Special Offers" className="pt-16 sm:pt-24 pb-2 px-3 sm:px-6 text-center relative z-20 flex justify-center">
       {/* Apple iOS Liquid Glass Dynamic Island Pill */}
       <div className="relative group max-w-xl w-full">
-        {/* Subtle Ambient Back Glow */}
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-gold/20 via-rose-500/10 to-gold/20 rounded-full blur-md opacity-40 group-hover:opacity-80 transition duration-500"></div>
+        {/* Subtle Ambient Back Glow - Disabled on mobile, ultra-soft on desktop */}
+        <div className="hidden sm:block absolute -inset-0.5 bg-gold/10 rounded-full blur-sm opacity-20 group-hover:opacity-40 transition duration-500 pointer-events-none"></div>
 
-        <div className="relative liquid-glass-pill rounded-full px-4 sm:px-5 py-2 flex items-center justify-between gap-3 text-xs border border-white/15 group-hover:border-gold/40 transition-all duration-300 shadow-liquid-pill">
+        <div className="relative liquid-glass-pill rounded-full px-3.5 sm:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-2.5 sm:gap-3 text-xs border border-white/10 hover:border-gold/30 transition-all duration-300 shadow-sm">
           
           {/* Left: Minimal iOS Tag Badge */}
           <div className="flex items-center gap-2 flex-shrink-0">

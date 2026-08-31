@@ -6,10 +6,10 @@ export const HeroSection = ({ onOpenBooking }) => {
   const { brand, whatsapp } = siteConfig;
 
   return (
-    <section id="home" className="relative pt-6 sm:pt-10 pb-20 md:pb-32 overflow-hidden">
+    <section id="home" className="relative pt-4 sm:pt-8 pb-20 md:pb-32">
       {/* Ambient Responsive Specular Aurora Glows */}
-      {/* Primary Top Headline Aurora Glow */}
-      <div className="absolute -top-10 sm:top-0 md:top-6 left-1/2 -translate-x-1/2 w-[340px] xs:w-[420px] sm:w-[580px] lg:w-[850px] h-[260px] xs:h-[320px] sm:h-[400px] lg:h-[450px] bg-gradient-to-b sm:bg-gradient-to-tr from-gold/40 via-amber-500/25 to-transparent rounded-full blur-[50px] xs:blur-[60px] sm:blur-[90px] lg:blur-[120px] pointer-events-none z-0 animate-pulse-glow"></div>
+      {/* Primary Top Headline Aurora Glow (Seamlessly blends up behind Announcement & Navbar) */}
+      <div className="absolute -top-32 sm:-top-24 md:-top-16 left-1/2 -translate-x-1/2 w-[360px] xs:w-[440px] sm:w-[600px] lg:w-[850px] h-[360px] xs:h-[420px] sm:h-[500px] lg:h-[540px] bg-gradient-to-b from-gold/25 via-amber-500/18 to-transparent rounded-full blur-[60px] xs:blur-[75px] sm:blur-[100px] lg:blur-[130px] pointer-events-none z-0"></div>
 
       {/* Secondary Ambient Warm Specular Glow */}
       <div className="absolute top-1/4 sm:top-1/3 left-1/2 -translate-x-1/2 lg:left-1/4 w-[280px] xs:w-[340px] sm:w-[460px] h-[220px] xs:h-[280px] sm:h-[340px] bg-gradient-to-tr from-amber-500/35 via-gold/25 to-transparent rounded-full blur-[45px] xs:blur-[55px] sm:blur-[85px] pointer-events-none z-0"></div>

@@ -3,8 +3,8 @@ import html2canvas from 'html2canvas';
 import { siteConfig } from '../config/siteConfig';
 
 /**
- * Generates an ultra-clean, aesthetic luxury salon PDF appointment pass and printable pass.
- * Guarantees 100% exact parity between Download PDF and Print Pass.
+ * Ultra-Luxury High-DPI PDF & Print Pass Generator for Aura Luxe Salon.
+ * Guarantees zero text clipping, 100% visible pass IDs and stamps, and perfect A4 margins.
  */
 
 const generateInvoiceCardHtml = (booking) => {
@@ -26,60 +26,88 @@ const generateInvoiceCardHtml = (booking) => {
     minute: '2-digit',
   });
 
-  const servicesList = Array.isArray(booking?.services) ? booking.services : [booking?.services || 'Salon Treatment'];
+  // Human-readable reservation date formatting
+  let formattedReservationDate = 'Scheduled Date';
+  if (booking?.date) {
+    try {
+      const dateParts = String(booking.date).split('-');
+      if (dateParts.length === 3) {
+        const d = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+        formattedReservationDate = d.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+      } else {
+        formattedReservationDate = booking.date;
+      }
+    } catch {
+      formattedReservationDate = booking.date;
+    }
+  }
+
+  const servicesList = Array.isArray(booking?.services) && booking.services.length > 0
+    ? booking.services
+    : [booking?.services || 'Signature Haute Treatment'];
 
   return `
     <div style="
-      width: 750px;
+      width: 740px;
+      margin: 0 auto;
       background-color: #ffffff !important;
       color: #0f172a !important;
       padding: 0;
       box-sizing: border-box;
       border: 2px solid #d4af37;
-      border-radius: 14px;
+      border-radius: 12px;
       overflow: hidden;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     ">
-      <!-- Top Gold Gradient Stripe -->
+      <!-- 24K Gold Gradient Top Accent Bar -->
       <div style="
         height: 6px;
-        background: linear-gradient(90deg, #aa8420, #d4af37, #f7d070, #d4af37, #aa8420) !important;
+        background-color: #d4af37 !important;
+        background: linear-gradient(90deg, #997316 0%, #d4af37 25%, #fae19c 50%, #d4af37 75%, #997316 100%) !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       "></div>
 
-      <!-- Header Banner (Rock-solid Table Layout for 100% Parity in PDF & Print) -->
+      <!-- Top Luxury Header (Obsidian Black & Champagne Gold) -->
       <table style="
         width: 100%;
         border-collapse: collapse;
         border: none;
-        background-color: #0c0e17 !important;
+        background-color: #090b12 !important;
         color: #ffffff !important;
         border-bottom: 2px solid #d4af37;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       ">
         <tr>
-          <!-- Left: Brand Monogram & Name -->
-          <td style="padding: 22px 20px 22px 28px; vertical-align: middle;">
+          <!-- Left: AL Monogram Seal & Brand Identity -->
+          <td style="padding: 20px 16px 20px 24px; vertical-align: middle;">
             <table style="border-collapse: collapse; border: none;">
               <tr>
-                <td style="vertical-align: middle; padding-right: 14px; width: 50px;">
+                <td style="vertical-align: middle; padding-right: 14px; width: 52px;">
+                  <!-- Monogram Badge (Circular with White Rim) -->
                   <div style="
-                    width: 46px;
-                    height: 46px;
+                    width: 48px;
+                    height: 48px;
                     border-radius: 50%;
-                    background: linear-gradient(135deg, #f7d070 0%, #d4af37 50%, #aa8420 100%) !important;
-                    color: #08090d !important;
+                    background-color: #d4af37 !important;
+                    background: linear-gradient(135deg, #fae19c 0%, #d4af37 50%, #aa8420 100%) !important;
+                    color: #000000 !important;
                     font-family: 'Playfair Display', Georgia, serif;
-                    font-weight: 800;
-                    font-size: 17px;
+                    font-weight: 900;
+                    font-size: 18px;
                     text-align: center;
                     line-height: 44px;
-                    border: 1.5px solid #ffffff;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                    border: 2px solid #ffffff;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                   ">
@@ -89,16 +117,17 @@ const generateInvoiceCardHtml = (booking) => {
                 <td style="vertical-align: middle;">
                   <div style="
                     display: inline-block;
-                    background-color: rgba(212, 175, 55, 0.2) !important;
-                    color: #f3cf7a !important;
-                    border: 1px solid rgba(212, 175, 55, 0.5);
+                    background-color: rgba(212, 175, 55, 0.25) !important;
+                    color: #fae19c !important;
+                    border: 1px solid rgba(212, 175, 55, 0.6);
                     font-size: 8.5px;
                     font-weight: 800;
                     letter-spacing: 1.2px;
-                    padding: 2px 7px;
+                    padding: 2px 8px;
                     border-radius: 4px;
                     text-transform: uppercase;
                     margin-bottom: 3px;
+                    line-height: 14px;
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                   ">
@@ -109,10 +138,10 @@ const generateInvoiceCardHtml = (booking) => {
                     font-weight: 800;
                     letter-spacing: 1.5px;
                     font-family: 'Playfair Display', Georgia, serif;
-                    line-height: 1.1;
+                    line-height: 30px;
+                    color: #ffffff !important;
                   ">
-                    <span style="color: #ffffff !important;">AURA </span>
-                    <span style="color: #f3cf7a !important;">LUXE</span>
+                    AURA <span style="color: #fae19c !important;">LUXE</span>
                   </div>
                   <div style="
                     color: #d4af37 !important;
@@ -121,6 +150,7 @@ const generateInvoiceCardHtml = (booking) => {
                     text-transform: uppercase;
                     font-weight: 600;
                     margin-top: 2px;
+                    line-height: 14px;
                   ">
                     ${brand.tagline || 'Beauty Parlour & Unisex Luxury Salon'}
                   </div>
@@ -129,26 +159,26 @@ const generateInvoiceCardHtml = (booking) => {
             </table>
           </td>
 
-          <!-- Right: Pass ID & Status Box -->
-          <td style="padding: 22px 28px 22px 10px; vertical-align: middle; text-align: right; width: 210px;">
+          <!-- Right: Pass ID & Status Badge (Rock-solid High-Contrast Box) -->
+          <td style="padding: 20px 24px 20px 10px; vertical-align: middle; text-align: right; width: 220px;">
             <div style="
-              background-color: #171a28 !important;
-              border: 1.5px solid #d4af37 !important;
-              border-radius: 10px;
-              padding: 9px 16px;
+              background-color: #161a29 !important;
+              border: 2px solid #d4af37 !important;
+              border-radius: 8px;
+              padding: 10px 18px;
               display: inline-block;
               text-align: right;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.4);
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
             ">
-              <div style="font-size: 8.5px; color: #9499a8 !important; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700;">
-                Pass Reference ID
+              <div style="font-size: 9px; color: #cbd5e1 !important; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; line-height: 13px;">
+                PASS REFERENCE ID
               </div>
-              <div style="font-size: 17px; font-weight: 800; color: #f3cf7a !important; font-family: 'Courier New', Courier, monospace, sans-serif !important; letter-spacing: 1px; margin-top: 2px;">
+              <div style="font-size: 18px; font-weight: 800; color: #facc15 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; letter-spacing: 1.5px; margin: 3px 0; line-height: 22px;">
                 ${passId}
               </div>
-              <div style="font-size: 9.5px; color: #4ade80 !important; font-weight: 700; margin-top: 2px;">
+              <div style="font-size: 10px; color: #4ade80 !important; font-weight: 800; letter-spacing: 0.5px; line-height: 14px;">
                 ✓ ${passStatus}
               </div>
             </div>
@@ -156,7 +186,7 @@ const generateInvoiceCardHtml = (booking) => {
         </tr>
       </table>
 
-      <!-- Sub Ribbon -->
+      <!-- Sub Ribbon Bar -->
       <table style="
         width: 100%;
         border-collapse: collapse;
@@ -168,23 +198,23 @@ const generateInvoiceCardHtml = (booking) => {
         print-color-adjust: exact !important;
       ">
         <tr>
-          <td style="padding: 9px 28px; vertical-align: middle;">
+          <td style="padding: 8px 24px; vertical-align: middle; line-height: 16px;">
             <strong>Issued On:</strong> ${issuedDate}
           </td>
-          <td style="padding: 9px 10px; text-align: center; vertical-align: middle;">
+          <td style="padding: 8px 10px; text-align: center; vertical-align: middle; line-height: 16px;">
             <strong>Lounge:</strong> VIP Sanctuary Suite
           </td>
-          <td style="padding: 9px 28px; text-align: right; vertical-align: middle;">
-            <strong>Booking Status:</strong> <span style="color: #166534 !important; font-weight: 700;">Verified & Confirmed</span>
+          <td style="padding: 8px 24px; text-align: right; vertical-align: middle; line-height: 16px;">
+            <strong>Status:</strong> <span style="color: #166534 !important; font-weight: 700;">Verified & Confirmed</span>
           </td>
         </tr>
       </table>
 
       <!-- Main Body Container -->
-      <div style="padding: 22px 28px; background-color: #ffffff !important;">
+      <div style="padding: 20px 24px; background-color: #ffffff !important;">
 
-        <!-- Client & Schedule Grid (Table-based for 100% precision) -->
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
+        <!-- Client & Schedule Grid (Table-based for zero clipping) -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
           <tr>
             <!-- Client Card -->
             <td style="width: 48%; vertical-align: top; padding-right: 8px;">
@@ -194,19 +224,21 @@ const generateInvoiceCardHtml = (booking) => {
                 border-left: 4px solid #d4af37;
                 border-radius: 8px;
                 padding: 12px 14px;
+                min-height: 88px;
+                box-sizing: border-box;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               ">
-                <div style="font-size: 9.5px; font-weight: 700; color: #9a761e !important; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                <div style="font-size: 9.5px; font-weight: 700; color: #9a761e !important; text-transform: uppercase; letter-spacing: 0.5px; line-height: 14px; margin-bottom: 2px;">
                   👤 Guest Information
                 </div>
-                <div style="font-size: 14px; font-weight: 700; color: #0f172a !important; margin-bottom: 2px;">
+                <div style="font-size: 15px; font-weight: 800; color: #0f172a !important; line-height: 22px;">
                   ${booking?.clientName || 'Valued Guest'}
                 </div>
-                <div style="font-size: 11.5px; color: #475569 !important;">
+                <div style="font-size: 11.5px; color: #475569 !important; line-height: 18px; margin-top: 2px;">
                   📱 Phone: <strong style="color: #0f172a !important;">${booking?.clientPhone || 'Not provided'}</strong>
                 </div>
-                ${booking?.clientEmail ? `<div style="font-size: 10.5px; color: #64748b !important; margin-top: 2px;">✉️ ${booking.clientEmail}</div>` : ''}
+                ${booking?.clientEmail ? `<div style="font-size: 10.5px; color: #64748b !important; line-height: 16px; margin-top: 2px;">✉️ ${booking.clientEmail}</div>` : ''}
               </div>
             </td>
 
@@ -218,19 +250,21 @@ const generateInvoiceCardHtml = (booking) => {
                 border-left: 4px solid #d4af37;
                 border-radius: 8px;
                 padding: 12px 14px;
+                min-height: 88px;
+                box-sizing: border-box;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               ">
-                <div style="font-size: 9.5px; font-weight: 700; color: #9a761e !important; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                <div style="font-size: 9.5px; font-weight: 700; color: #9a761e !important; text-transform: uppercase; letter-spacing: 0.5px; line-height: 14px; margin-bottom: 2px;">
                   📅 Reservation Schedule
                 </div>
-                <div style="font-size: 14px; font-weight: 700; color: #0f172a !important; margin-bottom: 2px;">
-                  ${booking?.date || 'Scheduled Date'}
+                <div style="font-size: 15px; font-weight: 800; color: #0f172a !important; line-height: 22px;">
+                  ${formattedReservationDate}
                 </div>
-                <div style="font-size: 11.5px; color: #475569 !important;">
+                <div style="font-size: 11.5px; color: #475569 !important; line-height: 18px; margin-top: 2px;">
                   ⏰ Slot: <strong style="color: #9a5309 !important; background-color: #fef3c7 !important; padding: 2px 6px; border-radius: 4px; -webkit-print-color-adjust: exact !important;">${booking?.slot || 'Confirmed Slot'}</strong>
                 </div>
-                <div style="font-size: 10.5px; color: #64748b !important; margin-top: 2px;">
+                <div style="font-size: 10.5px; color: #64748b !important; line-height: 16px; margin-top: 2px;">
                   ✂️ Specialist: <strong style="color: #0f172a !important;">${booking?.stylist || 'Master Stylist'}</strong>
                 </div>
               </div>
@@ -239,17 +273,17 @@ const generateInvoiceCardHtml = (booking) => {
         </table>
 
         <!-- Booked Services Table -->
-        <div style="margin-bottom: 18px;">
-          <div style="font-size: 10.5px; font-weight: 700; color: #0f172a !important; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 10.5px; font-weight: 700; color: #0f172a !important; text-transform: uppercase; letter-spacing: 0.5px; line-height: 16px; margin-bottom: 6px;">
             💅 Booked Treatments & Services
           </div>
 
           <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 11.5px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
             <thead>
               <tr style="background-color: #f8fafc !important; border-bottom: 2px solid #e2e8f0; -webkit-print-color-adjust: exact !important;">
-                <th style="padding: 9px 12px; color: #475569 !important; font-weight: 700; width: 36px;">#</th>
-                <th style="padding: 9px 12px; color: #475569 !important; font-weight: 700;">Service Description</th>
-                <th style="padding: 9px 12px; color: #475569 !important; font-weight: 700; text-align: right;">Status</th>
+                <th style="padding: 8px 12px; color: #475569 !important; font-weight: 700; width: 36px; line-height: 16px;">#</th>
+                <th style="padding: 8px 12px; color: #475569 !important; font-weight: 700; line-height: 16px;">Service Description</th>
+                <th style="padding: 8px 12px; color: #475569 !important; font-weight: 700; text-align: right; line-height: 16px;">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -257,12 +291,12 @@ const generateInvoiceCardHtml = (booking) => {
                 .map(
                   (srv, idx) => `
                 <tr style="border-bottom: 1px solid #f1f5f9; background-color: ${idx % 2 === 0 ? '#ffffff' : '#fafafa'} !important; -webkit-print-color-adjust: exact !important;">
-                  <td style="padding: 9px 12px; font-weight: 700; color: #b45309 !important;">0${idx + 1}</td>
-                  <td style="padding: 9px 12px;">
-                    <strong style="color: #0f172a !important; font-size: 12px;">${srv}</strong>
-                    <div style="color: #64748b !important; font-size: 9.5px; margin-top: 1px;">Professional salon service by master stylist</div>
+                  <td style="padding: 9px 12px; font-weight: 700; color: #b45309 !important; line-height: 16px;">0${idx + 1}</td>
+                  <td style="padding: 9px 12px; line-height: 16px;">
+                    <strong style="color: #0f172a !important; font-size: 12px; line-height: 16px;">${srv}</strong>
+                    <div style="color: #64748b !important; font-size: 9.5px; line-height: 14px; margin-top: 1px;">Professional Haute salon treatment</div>
                   </td>
-                  <td style="padding: 9px 12px; text-align: right; color: #166534 !important; font-weight: 700;">
+                  <td style="padding: 9px 12px; text-align: right; color: #166534 !important; font-weight: 700; line-height: 16px;">
                     ✓ Slot Reserved
                   </td>
                 </tr>
@@ -285,20 +319,21 @@ const generateInvoiceCardHtml = (booking) => {
           print-color-adjust: exact !important;
         ">
           <tr>
-            <td style="padding: 14px 18px; vertical-align: middle;">
-              <div style="font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: #786227 !important; letter-spacing: 0.5px;">
+            <td style="padding: 12px 18px; vertical-align: middle;">
+              <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #786227 !important; letter-spacing: 0.5px; line-height: 14px;">
                 Estimated Total Payable
               </div>
-              <div style="font-size: 10.5px; color: #64748b !important; margin-top: 2px;">
+              <div style="font-size: 10px; color: #64748b !important; line-height: 14px; margin-top: 2px;">
                 ✓ Pay at Salon Reception after treatment (Cash / UPI / Card)
               </div>
             </td>
-            <td style="padding: 14px 18px; text-align: right; vertical-align: middle;">
+            <td style="padding: 12px 18px; text-align: right; vertical-align: middle;">
               <div style="
                 font-family: 'Playfair Display', Georgia, serif;
-                font-size: 25px;
+                font-size: 26px;
                 font-weight: 800;
                 color: #9a761e !important;
+                line-height: 32px;
               ">
                 ${booking?.currency || brand.currency || '₹'}${booking?.amount || 0}
               </div>
@@ -316,10 +351,10 @@ const generateInvoiceCardHtml = (booking) => {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         ">
-          <div style="font-size: 9.5px; font-weight: 700; color: #1e40af !important; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
+          <div style="font-size: 9.5px; font-weight: 700; color: #1e40af !important; text-transform: uppercase; letter-spacing: 0.5px; line-height: 14px; margin-bottom: 3px;">
             📌 Important Guidelines for Guests
           </div>
-          <div style="font-size: 10.5px; color: #334155 !important; line-height: 1.45;">
+          <div style="font-size: 10px; color: #334155 !important; line-height: 15px;">
             • Please arrive 10-15 minutes prior to your allocated slot for consultation and refreshments.<br />
             • Present this official pass or Pass ID <strong>${passId}</strong> at the reception desk upon arrival.<br />
             • For rescheduling or queries, reach our WhatsApp Concierge: <strong>+${whatsapp.number}</strong>.
@@ -327,34 +362,35 @@ const generateInvoiceCardHtml = (booking) => {
         </div>
 
         <!-- Footer Section -->
-        <table style="width: 100%; border-collapse: collapse; border-top: 1px dashed #cbd5e1; padding-top: 14px;">
+        <table style="width: 100%; border-collapse: collapse; border-top: 1px dashed #cbd5e1; padding-top: 12px;">
           <tr>
-            <td style="vertical-align: bottom; font-size: 10px; color: #64748b !important; line-height: 1.5; padding-top: 14px;">
-              <strong style="color: #0f172a !important; font-size: 11px; display: block; margin-bottom: 1px;">${brand.name} Studio</strong>
+            <td style="vertical-align: bottom; font-size: 9.5px; color: #64748b !important; line-height: 15px; padding-top: 12px;">
+              <strong style="color: #0f172a !important; font-size: 10.5px; display: block; margin-bottom: 1px;">${brand.name} Studio</strong>
               📍 ${contact.address}<br />
               📞 Helpline: ${contact.primaryPhone} | 💬 WhatsApp: +${whatsapp.number}<br />
               🕒 Hours: Mon-Fri: ${hours?.mon_fri?.display || '10:00 AM - 09:00 PM'} | Sat-Sun: ${hours?.saturday?.display || '09:00 AM - 10:00 PM'}
             </td>
-            <td style="vertical-align: bottom; text-align: right; padding-top: 14px;">
+            <td style="vertical-align: bottom; text-align: right; padding-top: 12px;">
               <div style="
                 display: inline-block;
-                border: 1.5px solid #d4af37;
+                border: 2px solid #d4af37 !important;
                 border-radius: 6px;
-                padding: 4px 10px;
+                padding: 4px 12px;
                 background-color: #faf6ea !important;
                 text-align: center;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               ">
-                <div style="color: #9a761e !important; font-size: 8px; font-weight: 800; letter-spacing: 1px;">★ AURA LUXE ★</div>
-                <div style="color: #0f172a !important; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; margin-top: 1px;">VERIFIED PASS</div>
+                <div style="color: #9a761e !important; font-size: 8.5px; font-weight: 800; letter-spacing: 1px; line-height: 12px;">★ AURA LUXE ★</div>
+                <div style="color: #0f172a !important; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; margin-top: 1px; line-height: 13px;">VERIFIED PASS</div>
               </div>
               <div style="
                 font-family: monospace;
-                letter-spacing: 4px;
-                font-size: 12px;
+                letter-spacing: 3px;
+                font-size: 11px;
                 color: #475569 !important;
                 margin-top: 4px;
+                line-height: 14px;
               ">
                 ||| | |||| || | ||||| | ||
               </div>
@@ -372,7 +408,7 @@ const generateInvoiceCardHtml = (booking) => {
  */
 export const downloadAppointmentPassPdf = async (booking) => {
   const container = document.createElement('div');
-  container.id = 'aura-luxe-temp-pdf-pass';
+  container.id = 'aura-luxe-pdf-render-box';
   container.style.position = 'fixed';
   container.style.top = '0';
   container.style.left = '0';
@@ -380,6 +416,7 @@ export const downloadAppointmentPassPdf = async (booking) => {
   container.style.backgroundColor = '#ffffff';
   container.style.zIndex = '-99999';
   container.style.pointerEvents = 'none';
+  container.style.opacity = '1';
   container.innerHTML = generateInvoiceCardHtml(booking);
 
   document.body.appendChild(container);
@@ -388,7 +425,7 @@ export const downloadAppointmentPassPdf = async (booking) => {
     if (document.fonts) {
       await document.fonts.ready;
     }
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     const targetNode = container.firstElementChild;
     const canvas = await html2canvas(targetNode, {
@@ -396,28 +433,24 @@ export const downloadAppointmentPassPdf = async (booking) => {
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
-      windowWidth: 1200,
-      windowHeight: 1200,
-      x: 0,
-      y: 0,
-      width: 750,
+      windowWidth: 800,
     });
 
     const imgData = canvas.toDataURL('image/jpeg', 0.98);
     
-    // PDF Dimensions (A4 portrait)
-    const imgWidth = 210; // A4 width mm
-    const pageHeight = 297; // A4 height mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    // PDF Dimensions (A4 portrait: 210mm x 297mm)
+    const margin = 10; // 10mm margin on left and right
+    const pdfWidth = 190; // 210mm - 20mm margin
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+    const pageHeight = 297;
     
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: imgHeight > pageHeight ? [imgWidth, imgHeight + 10] : 'a4',
+      format: (imgHeight + (margin * 2)) > pageHeight ? [210, imgHeight + (margin * 2)] : 'a4',
     });
 
-    const yOffset = imgHeight < pageHeight ? 6 : 0;
-    pdf.addImage(imgData, 'JPEG', 0, yOffset, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'JPEG', margin, margin, pdfWidth, imgHeight);
 
     const safeId = booking?.id || booking?.passId || 'Booking';
     const fileName = `AuraLuxe_Pass_${safeId}.pdf`;
@@ -459,7 +492,7 @@ export const printAppointmentPass = (booking) => {
     body {
       background: #f8fafc;
       color: #0f172a;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       padding: 24px 15px;
       display: flex;
       flex-direction: column;
