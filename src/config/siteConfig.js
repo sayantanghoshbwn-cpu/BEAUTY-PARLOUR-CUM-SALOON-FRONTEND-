@@ -21,8 +21,8 @@ export const siteConfig = {
 
   // --- 2. CONTACT & LOCATION DETAILS ---
   contact: {
-    primaryPhone: import.meta.env.VITE_SALON_PHONE || "+91 98765 43210",
-    phoneHref: `tel:${(import.meta.env.VITE_SALON_PHONE || "+919876543210").replace(/\s+/g, '')}`,
+    primaryPhone: import.meta.env.VITE_SALON_PHONE || "+91 81019 77247",
+    phoneHref: `tel:${(import.meta.env.VITE_SALON_PHONE || "+918101977247").replace(/\s+/g, '')}`,
     email: import.meta.env.VITE_SALON_EMAIL || "appointments@auraluxesalon.com",
     address: import.meta.env.VITE_SALON_ADDRESS || "Plot 42, Park Street Boulevard, 2nd Floor, Opposite City Centre Mall, Kolkata, West Bengal - 700016",
     googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.5878235730316!2d88.35122731535745!3d22.55621413921319!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a0277119e7a835b%3A0x7d877e80f4f9fca4!2sPark%20St%2C%20Kolkata%2C%20West%20Bengal!5e0!3m2!1sen!2sin!4v1625564892741!5m2!1sen!2sin",
@@ -33,7 +33,7 @@ export const siteConfig = {
 
   // --- 3. WHATSAPP INTEGRATION SETTINGS ---
   whatsapp: {
-    number: import.meta.env.VITE_SALON_WHATSAPP || "919876543210",
+    number: import.meta.env.VITE_SALON_WHATSAPP || "918101977247",
     floatingButtonText: "Chat on WhatsApp",
     chatPromptGreeting: "👋 Hello! Welcome to Aura Luxe Salon & Parlour. How can we make your day fabulous today?",
     quickQueries: [

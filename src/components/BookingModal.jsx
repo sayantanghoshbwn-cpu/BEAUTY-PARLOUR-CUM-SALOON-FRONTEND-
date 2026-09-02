@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { siteConfig } from '../config/siteConfig';
 import { X, Check, MessageCircle, Download, Printer, ArrowRight, ArrowLeft, Tag, Sparkles, CheckCircle2, Calendar, Clock, Scissors, User, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
-import { downloadAppointmentPassPdf, printAppointmentPass } from '../utils/pdfGenerator';
+import { downloadAppointmentPassPdf, printAppointmentPass, downloadAndPrintAppointmentPass } from '../utils/pdfGenerator';
 
 export const downloadAppointmentPass = (booking) => downloadAppointmentPassPdf(booking);
-export { downloadAppointmentPassPdf, printAppointmentPass };
+export { downloadAppointmentPassPdf, printAppointmentPass, downloadAndPrintAppointmentPass };
 
 export const BookingModal = ({
   isOpen,
@@ -182,13 +182,20 @@ export const BookingModal = ({
     return newBooking;
   };
 
-  // Automatic Local Save + WhatsApp forward + Show Download Option
-  const handleConfirmAndBook = () => {
+  // Automatic Local Save + Auto PDF Download + WhatsApp forward
+  const handleConfirmAndBook = async () => {
     // 1. Automatically save booking locally
     const saved = saveBookingToStorage();
     setConfirmedBooking(saved);
 
-    // 2. Prepare WhatsApp concierge text
+    // 2. Automatically download official vector PDF pass immediately upon confirmation
+    try {
+      await downloadAppointmentPassPdf(saved);
+    } catch (err) {
+      console.error('Auto PDF download error:', err);
+    }
+
+    // 3. Prepare WhatsApp concierge text
     const serviceList = selectedServices.map((s) => `• ${s.name}`).join('\n');
     const message = `${siteConfig.whatsapp.messageHeader}
 
@@ -210,11 +217,11 @@ Please confirm my appointment slot. Thank you!`;
     const encoded = encodeURIComponent(message);
     const url = `https://wa.me/${siteConfig.whatsapp.number}?text=${encoded}`;
     
-    // 3. Open WhatsApp in new tab
+    // 4. Open WhatsApp in new tab
     window.open(url, '_blank');
 
-    // 4. Trigger auto-dismissing toast
-    showToast(`Appointment #${saved.id} confirmed! You can download your official PDF pass below.`, 'success');
+    // 5. Trigger auto-dismissing toast
+    showToast(`Appointment #${saved.id} confirmed! Official PDF pass downloaded.`, 'success');
   };
 
   // Calendar Calculation Helpers
@@ -282,7 +289,7 @@ Please confirm my appointment slot. Thank you!`;
                 : '5. Review & Confirm'}
             </h3>
             <p className="text-[11px] text-gray-400 font-light">
-              {confirmedBooking ? 'Pass ready • Click button below to download PDF' : 'Instant WhatsApp Pass Generation'}
+              {confirmedBooking ? 'Pass ready • PDF downloaded • Print below' : 'Instant WhatsApp Pass Generation'}
             </p>
           </div>
           <button
@@ -345,18 +352,29 @@ Please confirm my appointment slot. Thank you!`;
                   Session Reserved Successfully!
                 </h4>
                 <p className="text-xs text-gray-400 max-w-sm mx-auto font-light leading-relaxed">
-                  ✓ Your appointment details are confirmed and saved. Click below whenever you wish to download your official PDF pass.
+                  ✓ Your appointment details are confirmed & official PDF pass has been downloaded. You can print your pass below.
                 </p>
               </div>
 
-              {/* Pass Details Box */}
-              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 text-left space-y-2.5 text-xs">
-                <div className="flex justify-between items-center pb-2 border-b border-white/[0.08]">
+              {/* Dedicated Official Pass Print Section */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-gold/30 text-left space-y-3.5 shadow-2xl relative overflow-hidden">
+                {/* Gold Top Border Glow */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent"></div>
+
+                <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gold-light">Official Appointment Pass</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-gray-400">ID: <strong className="text-white">#{confirmedBooking.id}</strong></span>
+                </div>
+
+                <div className="flex justify-between items-center text-xs">
                   <span className="text-gray-400">Client:</span>
                   <strong className="text-white">{confirmedBooking.clientName} ({confirmedBooking.clientPhone})</strong>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-gray-300">
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
                   <div className="flex items-center gap-1.5">
                     <Calendar size={13} className="text-gold-light flex-shrink-0" />
                     <span>{confirmedBooking.date}</span>
@@ -376,61 +394,51 @@ Please confirm my appointment slot. Thank you!`;
 
                 <div className="pt-2 border-t border-white/[0.08]">
                   <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Booked Treatments:</span>
-                  <div className="text-[11px] text-gray-300">
+                  <div className="text-[11px] text-gray-300 font-light leading-relaxed">
                     {confirmedBooking.services.join(', ')}
                   </div>
                 </div>
-              </div>
 
-              {/* Download & View Actions */}
-              <div className="space-y-3 pt-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      showToast('Generating official PDF pass...', 'info');
-                      await downloadAppointmentPass(confirmedBooking);
-                      showToast('Official PDF Pass downloaded to your device!', 'success');
-                    }}
-                    className="w-full py-3.5 rounded-full btn-liquid-gold text-black font-bold text-xs sm:text-sm shadow-liquid-glow transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Download size={15} />
-                    <span>Download PDF Pass</span>
-                  </button>
-
+                {/* Single Action: Print Pass */}
+                <div className="pt-2">
                   <button
                     type="button"
                     onClick={() => {
+                      showToast('Opening print preview for official pass...', 'info');
                       printAppointmentPass(confirmedBooking);
                     }}
-                    className="w-full py-3.5 rounded-full btn-liquid-ghost text-white font-bold text-xs sm:text-sm border-gold/40 hover:border-gold transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 rounded-full btn-liquid-gold text-black font-bold text-xs sm:text-sm shadow-liquid-glow transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
                   >
-                    <Printer size={15} className="text-gold-light" />
+                    <Printer size={16} />
                     <span>Print Pass</span>
                   </button>
+                  <p className="text-[10px] text-center text-gray-400 mt-2 font-light">
+                    ⚡ PDF Pass downloaded automatically. Click above to open print preview directly.
+                  </p>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-2.5 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onOpenMyBookings();
-                    }}
-                    className="py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-gray-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/10"
-                  >
-                    <FileText size={13} />
-                    <span>View My Passes</span>
-                  </button>
+              {/* Secondary Actions */}
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenMyBookings();
+                  }}
+                  className="py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-gray-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/10"
+                >
+                  <FileText size={13} />
+                  <span>View My Passes</span>
+                </button>
 
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="py-2.5 rounded-full bg-white/[0.06] hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer border border-white/10"
-                  >
-                    <span>Done</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="py-2.5 rounded-full bg-white/[0.06] hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer border border-white/10"
+                >
+                  <span>Done</span>
+                </button>
               </div>
             </div>
           ) : (

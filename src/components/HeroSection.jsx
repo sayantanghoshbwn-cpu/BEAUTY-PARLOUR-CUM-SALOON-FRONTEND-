@@ -7,15 +7,8 @@ export const HeroSection = ({ onOpenBooking }) => {
 
   return (
     <section id="home" className="relative pt-4 sm:pt-8 pb-20 md:pb-32">
-      {/* Ambient Responsive Specular Aurora Glows */}
-      {/* Primary Top Headline Aurora Glow (Seamlessly blends up behind Announcement & Navbar) */}
-      <div className="absolute -top-32 sm:-top-24 md:-top-16 left-1/2 -translate-x-1/2 w-[360px] xs:w-[440px] sm:w-[600px] lg:w-[850px] h-[360px] xs:h-[420px] sm:h-[500px] lg:h-[540px] bg-gradient-to-b from-gold/25 via-amber-500/18 to-transparent rounded-full blur-[60px] xs:blur-[75px] sm:blur-[100px] lg:blur-[130px] pointer-events-none z-0"></div>
-
-      {/* Secondary Ambient Warm Specular Glow */}
-      <div className="absolute top-1/4 sm:top-1/3 left-1/2 -translate-x-1/2 lg:left-1/4 w-[280px] xs:w-[340px] sm:w-[460px] h-[220px] xs:h-[280px] sm:h-[340px] bg-gradient-to-tr from-amber-500/35 via-gold/25 to-transparent rounded-full blur-[45px] xs:blur-[55px] sm:blur-[85px] pointer-events-none z-0"></div>
-
-      {/* Tertiary Lower / Mobile Visual Accent Glow (Soft subtle warmth) */}
-      <div className="absolute bottom-4 sm:bottom-10 right-1/2 translate-x-1/2 lg:translate-x-0 lg:right-4 w-[220px] xs:w-[280px] sm:w-[360px] h-[180px] xs:h-[240px] sm:h-[280px] bg-gradient-to-tl from-gold/18 via-amber-500/10 to-transparent rounded-full blur-[45px] sm:blur-[65px] pointer-events-none z-0"></div>
+      {/* Radiant Golden Specular Ambient Glow (Warm, harmonious, luxury) */}
+      <div className="absolute -top-20 sm:-top-24 left-1/2 -translate-x-1/2 w-[320px] xs:w-[420px] sm:w-[750px] h-[280px] xs:h-[360px] sm:h-[480px] bg-gradient-to-b from-gold/22 via-amber-500/14 to-transparent sm:from-gold/25 sm:via-amber-500/15 rounded-full blur-[60px] xs:blur-[70px] sm:blur-[110px] pointer-events-none z-0"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">

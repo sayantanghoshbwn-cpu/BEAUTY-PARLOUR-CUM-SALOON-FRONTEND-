@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { siteConfig } from '../config/siteConfig';
-import { X, Calendar, Clock, Scissors, User, Trash2, ArrowUpRight, Download, Printer } from 'lucide-react';
-import { downloadAppointmentPassPdf, printAppointmentPass } from '../utils/pdfGenerator';
+import { X, Calendar, Clock, Scissors, User, Trash2, ArrowUpRight, Printer, Download } from 'lucide-react';
+import { printAppointmentPass, downloadAppointmentPassPdf } from '../utils/pdfGenerator';
 
 export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) => {
   const [bookings, setBookings] = useState([]);
@@ -108,24 +108,15 @@ export const MyBookingsModal = ({ isOpen, onClose, onOpenBooking, showToast }) =
                   
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={async () => {
-                        showToast('Generating official PDF pass...', 'info');
-                        await downloadAppointmentPassPdf(b);
-                        showToast(`Official PDF Pass #${b.id} downloaded!`, 'success');
-                      }}
-                      className="text-xs text-gold-light hover:text-gold font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                      title="Download Official PDF Pass"
-                    >
-                      <Download size={12} /> Download PDF
-                    </button>
-                    <button
                       onClick={() => {
+                        showToast('Opening print preview for pass...', 'info');
                         printAppointmentPass(b);
                       }}
-                      className="text-xs text-gray-300 hover:text-white font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                      title="Print Appointment Pass"
+                      className="text-xs text-gold-light hover:text-gold font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Print Official Pass"
                     >
-                      <Printer size={12} /> Print
+                      <Printer size={13} />
+                      <span>Print Pass</span>
                     </button>
                     <button
                       onClick={() => handleCancel(idx)}

@@ -240,8 +240,8 @@ export const Navbar = ({ onOpenBooking, onOpenMyBookings }) => {
         <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-3xl flex flex-col justify-between p-6 lg:hidden overflow-y-auto animate-in fade-in duration-300">
           
           {/* Ambient Glowing Background Orbs inside Mobile Drawer */}
-          <div className="absolute top-10 left-10 w-72 h-72 bg-gold/25 rounded-full blur-[90px] pointer-events-none z-0"></div>
-          <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-500/20 rounded-full blur-[90px] pointer-events-none z-0"></div>
+          <div className="absolute top-10 left-10 w-64 h-64 bg-gold/20 rounded-full blur-[75px] pointer-events-none z-0"></div>
+          <div className="absolute bottom-10 right-10 w-64 h-64 bg-amber-500/16 rounded-full blur-[75px] pointer-events-none z-0"></div>
 
           {/* Top Bar inside Drawer */}
           <div className="flex items-center justify-between pb-5 border-b border-white/10 flex-shrink-0">
